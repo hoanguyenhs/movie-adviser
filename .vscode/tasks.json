@@ -1,0 +1,16 @@
+{
+    "version": "0.1.0",
+    "command": "tsc",
+    "isShellCommand": true,
+    "isWatching": true,
+    "problemMatcher": "$tsc-watch",
+    "args": [],
+    "tasks": [{
+        "taskName": "build",
+        "args": [
+            "${workspaceRoot}\\project.json"
+        ],
+        "isBuildCommand": true,
+        "problemMatcher": "$msCompile"
+    }]
+}
