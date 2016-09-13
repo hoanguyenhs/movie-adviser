@@ -1,4 +1,11 @@
-@{
-    ViewData["Title"] = "Home Page";
-}
-<script src="~/ts/greeter.js" asp-append-version="true"></script>
+<div id="body">
+    <img id="fileUploadDisplay" />
+    <div class="fileUpload btn btn-primary">
+        <span>Upload</span>
+        <input id="fileUpload" type="file" class="upload" accept="image/*" />
+    </div>
+    <buton id="analyzeBtn" class="btn btn-success">Analyze</buton>
+    <ul id="resultOfFaceApi"></ul>
+    <>
+</div>
+<script src="~/ts/site.js"></script>
