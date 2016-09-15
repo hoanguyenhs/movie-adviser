@@ -119,3 +119,14 @@ hr {
     width: 100%;
     border: 1px firebrick solid;
 }
+
+.facebook {
+    display: none;
+}
+
+#instrutions {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    padding-top: 100px;
+}

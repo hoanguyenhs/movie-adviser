@@ -55,10 +55,12 @@ $('#fileUpload').click(function () {
     $('#fileUploadDisplay').removeAttr('src');
     $('#fileUploadDisplay').css('height', '500px');
     $('#results').html('');
+    $('#instrutions').show();
 });
 $('#fileUpload').change(function () {
     readFile(this, <HTMLImageElement>$('#fileUploadDisplay')[0]);
     $('#fileUploadDisplay').css('height', 'auto');
+    $('#instrutions').hide();
 });
 
 /*
@@ -213,8 +215,9 @@ class Movie {
     backdrop_path: string;
     key: string;
     site: string;
+    imdb_id: string;
     constructor(i: number, t: string, d: string, p: string, o: string,
-        po: number, v: number, b: string, k: string, s: string) {
+        po: number, v: number, b: string, k: string, s: string, im: string) {
         this.id = i;
         this.title = t;
         this.release_date = d;
@@ -225,6 +228,7 @@ class Movie {
         this.backdrop_path = b;
         this.key = k;
         this.site = s;
+        this.imdb_id = im;
     }
 }
 var movies = Array<Movie>();
@@ -260,9 +264,12 @@ function callThemovieDB(genres: string) {
                 div += ' <b> || User vote:</b> ' + movie.vote_average;
                 div += '</p><p><b>Description:</b></p>';
                 div += '<p>' + movie.overview + '</p>';
-                div += '<button id="' + movie.id + '" key="null" type="button" class="btn btn-warning trailerBtn">';
+                div += '<button movie="' + movie.id + '" key="null" type="button" class="btn btn-warning trailerBtn">';
                 div += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span>';
-                div += 'Watch trailer</button></div>';
+                div += ' Watch trailer</button> ';
+                div += '<button movie="' + movie.id + '" key="null" type="button" class="btn btn-primary shareBtn">';
+                div += '<span><img src="images/facebook.png" width="14" height="14"></span>';
+                div += ' Share on Facebook</button></div>';
                 div += '<div class="col-md-4 movie-backdrop">';
                 div += '<img src="http://image.tmdb.org/t/p/w500' + movie.backdrop_path + '" width="370" height="300">';
                 div += '</div></div>';
@@ -282,7 +289,7 @@ function callThemovieDB(genres: string) {
 */
 $('body').on('click', '.trailerBtn', function (e) {
     var btn = $(this);
-    var id = btn.attr('id');
+    var id = btn.attr('movie');
     var key = btn.attr('key');
     if (key == 'null') {
         var params = {
@@ -319,5 +326,47 @@ $('body').on('click', '.trailerBtn', function (e) {
         $('#myModalBody').html('<iframe width="560" height="350" src="https://www.youtube.com/embed/' +
             key + '" frameborder="0" allowfullscreen></iframe>');
         $('#myModal').modal('show');
+    }
+});
+
+/*
+* Share to facebook
+*/
+// Hide the default button
+$('body').on('click', '.shareBtn', function (e) {
+    var btn = $(this);
+    var id = btn.attr('movie');
+    var key = btn.attr('key');
+    if (key == 'null') {
+        var params = {
+            // Request parameters
+            "api_key": "d2d687a6e5d66a89ab03cd29621cb432",
+        };
+        $.ajax({
+            url: 'http://api.themoviedb.org/3/movie/'
+            + id + '?' + $.param(params),
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            beforeSend: function (xhr: JQueryXHR) {
+                showLoadingIcon();
+            },
+            success: function (data: Movie) {
+                btn.attr('key', data.imdb_id);
+                var str = '<a id="' + id + '" class="facebook" target="" ' +
+                    'onclick="return !window.open(this.href, \'Facebook\', \'width=640,height=300\')" ' +
+                    'href="http://www.facebook.com/sharer/sharer.php?u=http://www.imdb.com/title/' +
+                    data.imdb_id + '">‌​Facebook</a>';
+                btn.parent().append(str);
+                $('#' + id).trigger('click');
+                hideLoadingIcon();
+            },
+            error: function (xhr: JQueryXHR, status: string, error: string) {
+                hideLoadingIcon();
+                alert(error);
+            }
+        });
+    } else {
+        $('#' + id).trigger('click');
     }
 }); 
